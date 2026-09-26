@@ -1,0 +1,254 @@
+{
+	"info": {
+		"_postman_id": "d3f8b1c5-4b32-4f2e-9a33-110b992c3f2e",
+		"name": "NIE ServiceHub - Day 3 Backend Completion",
+		"description": "Postman API Collection for Day 3 verification of NIE College Service Request System REST APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/health",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "health"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create Request (ID Card)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"ID Card Not Working\",\n  \"description\": \"Student ID card is not being detected at the library entrance\",\n  \"category\": \"ID_CARD\",\n  \"priority\": \"HIGH\",\n  \"created_by\": \"student01\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. List Requests",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Filter Requests by Category & Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests?category=ID_CARD&status=NEW",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests"],
+					"query": [
+						{
+							"key": "category",
+							"value": "ID_CARD"
+						},
+						{
+							"key": "status",
+							"value": "NEW"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Get Single Request (REQ-1001)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. Update Request Info",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"ID Card Barcode Damaged - Immediate Replacement Required\",\n  \"priority\": \"URGENT\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. Assign Request to Staff",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"assigned_to\": \"Staff Officer Suresh\",\n  \"department\": \"Student Services Desk\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001/assign",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001", "assign"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. Valid Status Transition (IN_PROGRESS)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001/status",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001", "status"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. Invalid Status Transition (Expect 400)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"NEW\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001/status",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001", "status"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10. Non-Existent Request (Expect 404)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-9999",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-9999"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11. Validation Failure (Expect 422)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"  \",\n  \"description\": \"Bad payload\",\n  \"category\": \"INVALID_CAT\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12. Delete Request",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001"]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,3 +1,5 @@
+import logging
+import re
 from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any
 from fastapi import HTTPException, status
@@ -6,9 +8,10 @@ from app.models.service_request import Status, Category, Priority, VALID_TRANSIT
 from app.schemas.service_request import (
     ServiceRequestCreate,
     ServiceRequestUpdate,
-    ServiceRequestAssign,
-    ServiceRequestResponse
+    ServiceRequestAssign
 )
+
+logger = logging.getLogger("nie_servicehub.service")
 
 # Department Mapping Defaults by Category
 DEFAULT_DEPARTMENTS: Dict[Category, str] = {
@@ -29,7 +32,7 @@ def get_counters_collection():
     return db["counters"]
 
 def generate_request_id() -> str:
-    """Generate sequential human-readable request IDs like REQ-1001, REQ-1002"""
+    """Generate sequential human-readable request IDs like REQ-1001, REQ-1002 safely."""
     counters = get_counters_collection()
     counter = counters.find_one_and_update(
         {"_id": "request_id"},
@@ -37,7 +40,6 @@ def generate_request_id() -> str:
         upsert=True,
         return_document=True
     )
-    # Start sequence at 1001
     seq = counter.get("seq", 1) + 1000
     return f"REQ-{seq}"
 
@@ -66,6 +68,7 @@ class RequestService:
         }
 
         col.insert_one(document)
+        logger.info(f"Created new service request {req_id} for {data.created_by}")
         return document
 
     @staticmethod
@@ -84,8 +87,9 @@ class RequestService:
             query["category"] = category_filter.value
         if priority_filter:
             query["priority"] = priority_filter.value
-        if search:
-            regex_pattern = {"$regex": search.strip(), "$options": "i"}
+        if search and search.strip():
+            escaped_search = re.escape(search.strip())
+            regex_pattern = {"$regex": escaped_search, "$options": "i"}
             query["$or"] = [
                 {"title": regex_pattern},
                 {"description": regex_pattern},
@@ -99,11 +103,11 @@ class RequestService:
     @staticmethod
     def get_request_by_id(request_id: str) -> Dict[str, Any]:
         col = get_collection()
-        doc = col.find_one({"request_id": request_id})
+        doc = col.find_one({"request_id": request_id.upper().strip()})
         if not doc:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Service request with ID '{request_id}' not found."
+                detail=f"Service request '{request_id}' not found."
             )
         return doc
 
@@ -126,8 +130,8 @@ class RequestService:
             return existing
 
         update_fields["updated_at"] = datetime.now(timezone.utc)
-        col.update_one({"request_id": request_id}, {"$set": update_fields})
-        return RequestService.get_request_by_id(request_id)
+        col.update_one({"request_id": existing["request_id"]}, {"$set": update_fields})
+        return RequestService.get_request_by_id(existing["request_id"])
 
     @staticmethod
     def update_status(request_id: str, new_status: Status) -> Dict[str, Any]:
@@ -150,10 +154,11 @@ class RequestService:
 
         now = datetime.now(timezone.utc)
         col.update_one(
-            {"request_id": request_id},
+            {"request_id": existing["request_id"]},
             {"$set": {"status": new_status.value, "updated_at": now}}
         )
-        return RequestService.get_request_by_id(request_id)
+        logger.info(f"Updated status for {request_id}: {current_status.value} -> {new_status.value}")
+        return RequestService.get_request_by_id(existing["request_id"])
 
     @staticmethod
     def assign_request(request_id: str, data: ServiceRequestAssign) -> Dict[str, Any]:
@@ -172,11 +177,13 @@ class RequestService:
         if existing["status"] == Status.NEW.value:
             update_fields["status"] = Status.ASSIGNED.value
 
-        col.update_one({"request_id": request_id}, {"$set": update_fields})
-        return RequestService.get_request_by_id(request_id)
+        col.update_one({"request_id": existing["request_id"]}, {"$set": update_fields})
+        logger.info(f"Assigned request {request_id} to {data.assigned_to}")
+        return RequestService.get_request_by_id(existing["request_id"])
 
     @staticmethod
     def delete_request(request_id: str) -> None:
         col = get_collection()
         existing = RequestService.get_request_by_id(request_id)
-        col.delete_one({"request_id": request_id})
+        col.delete_one({"request_id": existing["request_id"]})
+        logger.info(f"Deleted service request {request_id}")

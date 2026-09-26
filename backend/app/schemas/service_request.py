@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from datetime import datetime
 from typing import Optional
 from app.models.service_request import Category, Priority, Status
@@ -9,7 +9,17 @@ class ServiceRequestCreate(BaseModel):
     category: Category = Field(..., description="Service request category", example=Category.ID_CARD)
     priority: Priority = Field(default=Priority.MEDIUM, description="Priority level", example=Priority.MEDIUM)
     created_by: str = Field(default="Student", min_length=2, max_length=50, description="Creator name or ID", example="Student John Doe")
-    department: Optional[str] = Field(default=None, description="Department handling the request", example="Student Services")
+    department: Optional[str] = Field(default=None, max_length=100, description="Department handling the request", example="Student Services")
+
+    @field_validator("title", "description", "created_by", mode="before")
+    @classmethod
+    def check_not_empty_whitespace(cls, value: str) -> str:
+        if isinstance(value, str):
+            stripped = value.strip()
+            if not stripped:
+                raise ValueError("Field cannot be empty or contain only whitespace.")
+            return stripped
+        return value
 
 class ServiceRequestUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=3, max_length=100)
@@ -17,12 +27,32 @@ class ServiceRequestUpdate(BaseModel):
     category: Optional[Category] = None
     priority: Optional[Priority] = None
 
+    @field_validator("title", "description", mode="before")
+    @classmethod
+    def check_not_empty_whitespace(cls, value: Optional[str]) -> Optional[str]:
+        if value is not None and isinstance(value, str):
+            stripped = value.strip()
+            if not stripped:
+                raise ValueError("Field cannot be empty or contain only whitespace.")
+            return stripped
+        return value
+
 class ServiceRequestStatusUpdate(BaseModel):
     status: Status = Field(..., description="New status for the service request", example=Status.ASSIGNED)
 
 class ServiceRequestAssign(BaseModel):
     assigned_to: str = Field(..., min_length=2, max_length=50, description="Staff member assigned to request", example="Staff Member Jane")
-    department: Optional[str] = Field(None, description="Target department", example="IT Helpdesk")
+    department: Optional[str] = Field(None, max_length=100, description="Target department", example="IT Helpdesk")
+
+    @field_validator("assigned_to", "department", mode="before")
+    @classmethod
+    def check_not_empty_whitespace(cls, value: Optional[str]) -> Optional[str]:
+        if value is not None and isinstance(value, str):
+            stripped = value.strip()
+            if not stripped:
+                raise ValueError("Field cannot be empty or contain only whitespace.")
+            return stripped
+        return value
 
 class ServiceRequestResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
