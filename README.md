@@ -1,79 +1,116 @@
-# Techfest — The Future Is Built Here | IIT Bombay
+# NIE College Service Request System (NIE ServiceHub)
 
-A premium, futuristic, production-quality landing page concept for the official **Techfest website of IIT Bombay** (Asia's Largest Science and Technology Festival).
-
-> **Concept Tagline:** "THE FUTURE IS BUILT HERE."
+A centralized web application for college students and faculty at NIE to raise, track, and manage campus service requests efficiently across departments.
 
 ---
 
-## 🚀 Concept Overview
+## 📌 Project Overview
+**NIE ServiceHub** streamilnes campus operations by replacing fragmented request methods with a structured service request workflow:
+`Student / Faculty` → `Raise Request` → `Department Routing` → `Staff Assignment` → `In Progress Work` → `Resolution` → `Student Confirmation` → `Closed`
 
-This concept transforms the digital presentation of **Techfest, IIT Bombay** into a high-technology telemetry interface. Designed to evoke the feeling of entering a futuristic operating system or space telemetry center, the site balances futuristic aesthetics with high contrast, editorial readability, and responsive performance.
-
-### Key Visual & UX Philosophy
-- **Futuristic Telemetry Aesthetic:** Dark space palette (`#030508`), high-contrast sans-serif typography, micro-HUD coordinate labels (`19.1334° N, 72.9133° E`), and glowing vector accents.
-- **Sophisticated 2D Engineering:** Built strictly without 3D models or heavy WebGL engines to ensure instant load times and 60fps fluidity across desktop and mobile devices.
-- **Verified Facts Only:** Incorporates authentic Techfest IIT Bombay verticals, statistics (175K+ annual footfall, 300+ events, 2,500+ engaged colleges, 28th edition legacy), and flagship segments like *Robowars*, *CozmoClench*, *Technoholix*, and *Ozone*.
-
----
-
-## ✨ Features
-
-- **⚡ Lightweight Loading Experience:** Fast (<1.5s) futuristic telemetry initialization sequence with ASCII progress feedback (`[████████████████░░░░]`). Respects `prefers-reduced-motion`.
-- **🛰️ Interactive 2D Techfest Event Radar:** Signature feature allowing users to hover or click surrounding event nodes connected via animated vector signal lines, displaying live telemetry inspector cards.
-- **🎯 Robotic Combat Arena ("Enter the Arena"):** High-energy Robowars section featuring an abstract 2D targeting UI, target-lock HUD overlays, and heavy armor specs.
-- **🏆 Competitions Showcase Track:** Interactive horizontal card track highlighting flagship challenges (Robowars International, CozmoClench, Meshmerize, HackAI, SkyTrace).
-- **💥 Kinetic Typography Reveal:** Dramatic scroll-triggered entrance for core festival pillars: `TECH` / `PEOPLE` / `ENERGY`.
-- **🌌 Canvas 2D Particle Telemetry System:** Custom 2D particle canvas with cursor reactivity, boundary wrapping, and low-power mobile optimization.
-- **🧲 Magnetic CTA Buttons & Custom Telemetry Cursor:** Subtle desktop cursor with contextual state labels (`EXPLORE`, `BATTLE`, `TELEMETRY`).
-- **📱 Fully Responsive & Accessible:** Tailored layout transformations for Desktop (1440px+), Tablet (768px), and Mobile (375-430px) screens.
+Supported Service Categories:
+- 📜 **Bonafide Certificate**
+- 🆔 **ID Card Services**
+- 🏠 **Hostel Services**
+- 🚌 **Transport Services**
+- 📚 **Library Services**
+- 💻 **IT Support Services**
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
-- **Framework:** Next.js 15+ (App Router)
-- **Library:** React 19
-- **Styling:** Tailwind CSS v4 & Custom CSS Utilities
-- **Animations:** Framer Motion 13
-- **Icons:** Lucide React
-- **Graphics & Systems:** Custom Canvas 2D & Inline SVG Telemetry Vectors
-
----
-
-## ⛔ Absolute 3D Restriction Compliance
-
-> **Important Note:** This concept **intentionally uses NO 3D assets or 3D rendering libraries** (No Three.js, React Three Fiber, Babylon.js, Spline, GLTF/GLB models). The entire visual system is crafted using HTML, CSS, SVG, Canvas 2D, gradients, particles, motion, and typography.
+| Layer | Technology |
+|---|---|
+| **Language** | Python 3.14+, JavaScript (ES6+) |
+| **Backend Framework** | FastAPI |
+| **Data Validation** | Pydantic v2 |
+| **Database** | MongoDB (PyMongo / Motor) |
+| **API Testing** | Postman / Thunder Client |
+| **Version Control** | Git & GitHub |
 
 ---
 
-## 💻 Running Locally
+## 📁 Project Structure
 
-### 1. Install Dependencies
-```bash
-npm install
 ```
-
-### 2. Start Development Server
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to view the result.
-
-### 3. Build for Production
-```bash
-npm run build
+nie-servicehub/
+├── backend/
+│   ├── app/
+│   │   ├── main.py              # FastAPI Application Entry Point
+│   │   ├── config.py            # Environment Configuration
+│   │   ├── database.py          # MongoDB Database Connection Manager
+│   │   ├── models/              # Data Models
+│   │   ├── schemas/             # Pydantic Validation Schemas
+│   │   ├── routes/              # REST API Routes
+│   │   ├── services/            # Business Logic Layer
+│   │   └── utils/               # Utility Functions
+│   ├── requirements.txt         # Python Dependencies
+│   └── tests/
+│       └── test_db.py           # MongoDB Connectivity Test Suite
+├── .env.example                 # Sample Environment Configuration
+├── .gitignore                   # Git Ignore Configuration
+└── README.md                    # Project Documentation
 ```
 
 ---
 
-## 📽️ Demo & Submission Links
+## ⚙️ Setup Instructions (Day 1 - Foundation)
 
-- **Live Demo:** [Insert Vercel / Netlify Link]
-- **GitHub Repository:** [Insert GitHub Repo Link]
-- **Demo Video:** [Insert Google Drive Demo Recording Link]
+### Prerequisites
+- Python 3.10+
+- MongoDB installed locally or MongoDB Cloud Connection String
+- Git
+
+### 1. Clone & Configure Remote
+```bash
+git clone https://github.com/niharrai7/nie-servicehub.git
+cd nie-servicehub
+```
+
+### 2. Environment Setup
+Create a `.env` file in the project root:
+```env
+MONGO_URI=mongodb://localhost:27017
+MONGO_DB_NAME=nie_servicehub
+APP_NAME="NIE ServiceHub API"
+DEBUG=True
+PORT=8000
+```
+
+### 3. Install Backend Dependencies
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+### 4. Verify Database Connection
+Run the database test script to verify Python → MongoDB connectivity:
+```bash
+python tests/test_db.py
+```
+
+### 5. Run FastAPI Application
+```bash
+python -m uvicorn app.main:app --reload --port 8000
+```
+Access API Documentation (Swagger): `http://127.0.0.1:8000/docs`
 
 ---
 
-© Techfest, IIT Bombay. Designed & Developed for the Techfest Landing Page Challenge.
+## 📡 Initial REST API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/` | Application Root & Status Info |
+| `GET` | `/api/health` | Service & Database Health Check |
+
+---
+
+## 📊 Learning Roadmap Status
+
+- [x] **Day 1 — Foundation**: Git, GitHub, Python, MongoDB, Environment Setup, API Foundation
+- [ ] **Day 2-3 — FastAPI Backend**: Request Lifecycle, Schemas, Full REST Endpoints, Auth
+- [ ] **Day 4-5 — React Frontend**: Dashboard, Request Forms, Routing, Bootstrap UI
+- [ ] **Dockerization**: Dockerfiles, Docker Compose Orchestration
+- [ ] **Day 6 — GenAI Integration**: AI-Assisted Ticket Classification & Recommendation
