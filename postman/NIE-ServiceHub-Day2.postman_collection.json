@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "c1f7a0b4-3a21-4d1e-8f22-990a881b2e1d",
+		"name": "NIE ServiceHub - Day 2 REST APIs",
+		"description": "Postman API Collection for testing NIE College Service Request System REST APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/health",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "health"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create Service Request (ID Card)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"ID Card RFID Chip Not Scanning\",\n  \"description\": \"My RFID ID card is not working at the main library entrance barrier.\",\n  \"category\": \"ID_CARD\",\n  \"priority\": \"HIGH\",\n  \"created_by\": \"Student Rahul Sharma\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. List All Requests",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Filter Requests by Status (NEW)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests?status=NEW",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests"],
+					"query": [
+						{
+							"key": "status",
+							"value": "NEW"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. Filter Requests by Category (ID_CARD)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests?category=ID_CARD",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests"],
+					"query": [
+						{
+							"key": "category",
+							"value": "ID_CARD"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. Get Request Details by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. Update Service Request Info",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"ID Card RFID Chip Damaged - Urgently Needs Replacement\",\n  \"priority\": \"URGENT\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. Assign Request to Staff",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"assigned_to\": \"Staff Officer Suresh\",\n  \"department\": \"Student Services Desk\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001/assign",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001", "assign"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. Change Status to IN_PROGRESS",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001/status",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001", "status"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10. Test Invalid Status Transition (Expect 400)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"NEW\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001/status",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001", "status"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11. Test Non-Existent Request (Expect 404)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-9999",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-9999"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12. Delete Service Request",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/requests/REQ-1001",
+					"protocol": "http",
+					"host": ["127", "0", "0", "1"],
+					"port": "8000",
+					"path": ["api", "requests", "REQ-1001"]
+				}
+			},
+			"response": []
+		}
+	]
+}

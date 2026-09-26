@@ -5,16 +5,16 @@ A centralized web application for college students and faculty at NIE to raise, 
 ---
 
 ## 📌 Project Overview
-**NIE ServiceHub** streamilnes campus operations by replacing fragmented request methods with a structured service request workflow:
+**NIE ServiceHub** streamlines campus operations by replacing fragmented request methods with a structured service request workflow:
 `Student / Faculty` → `Raise Request` → `Department Routing` → `Staff Assignment` → `In Progress Work` → `Resolution` → `Student Confirmation` → `Closed`
 
 Supported Service Categories:
-- 📜 **Bonafide Certificate**
-- 🆔 **ID Card Services**
-- 🏠 **Hostel Services**
-- 🚌 **Transport Services**
-- 📚 **Library Services**
-- 💻 **IT Support Services**
+- 📜 **Bonafide Certificate** (`BONAFIDE`)
+- 🆔 **ID Card Services** (`ID_CARD`)
+- 🏠 **Hostel Services** (`HOSTEL`)
+- 🚌 **Transport Services** (`TRANSPORT`)
+- 📚 **Library Services** (`LIBRARY`)
+- 💻 **IT Support Services** (`IT_SUPPORT`)
 
 ---
 
@@ -23,7 +23,7 @@ Supported Service Categories:
 | Layer | Technology |
 |---|---|
 | **Language** | Python 3.14+, JavaScript (ES6+) |
-| **Backend Framework** | FastAPI |
+| **Backend Framework** | FastAPI (ASGI / Uvicorn) |
 | **Data Validation** | Pydantic v2 |
 | **Database** | MongoDB (PyMongo / Motor) |
 | **API Testing** | Postman / Thunder Client |
@@ -37,17 +37,25 @@ Supported Service Categories:
 nie-servicehub/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py              # FastAPI Application Entry Point
-│   │   ├── config.py            # Environment Configuration
+│   │   ├── main.py              # FastAPI Application Entry Point & Exception Handlers
+│   │   ├── config.py            # Environment Settings
 │   │   ├── database.py          # MongoDB Database Connection Manager
-│   │   ├── models/              # Data Models
-│   │   ├── schemas/             # Pydantic Validation Schemas
-│   │   ├── routes/              # REST API Routes
-│   │   ├── services/            # Business Logic Layer
-│   │   └── utils/               # Utility Functions
+│   │   ├── models/
+│   │   │   └── service_request.py # Domain Enums (Category, Priority, Status, Lifecycle)
+│   │   ├── schemas/
+│   │   │   └── service_request.py # Pydantic Request/Response Validation Schemas
+│   │   ├── routes/
+│   │   │   ├── health.py        # Health Check Router (/api/health)
+│   │   │   └── requests.py      # Service Request REST Routers (/api/requests)
+│   │   ├── services/
+│   │   │   └── request_service.py # Business Logic & MongoDB Query Layer
+│   │   └── utils/               # Helpers & Utilities
 │   ├── requirements.txt         # Python Dependencies
 │   └── tests/
-│       └── test_db.py           # MongoDB Connectivity Test Suite
+│       ├── test_db.py           # Database Connection Test Suite
+│       └── test_requests.py     # Automated REST API Test Suite (12 Tests)
+├── postman/
+│   └── NIE-ServiceHub-Day2.postman_collection.json # Postman Collection
 ├── .env.example                 # Sample Environment Configuration
 ├── .gitignore                   # Git Ignore Configuration
 └── README.md                    # Project Documentation
@@ -55,62 +63,47 @@ nie-servicehub/
 
 ---
 
-## ⚙️ Setup Instructions (Day 1 - Foundation)
+## ⚙️ Setup & Execution Instructions
 
-### Prerequisites
-- Python 3.10+
-- MongoDB installed locally or MongoDB Cloud Connection String
-- Git
-
-### 1. Clone & Configure Remote
-```bash
-git clone https://github.com/niharrai7/nie-servicehub.git
-cd nie-servicehub
-```
-
-### 2. Environment Setup
-Create a `.env` file in the project root:
-```env
-MONGO_URI=mongodb://localhost:27017
-MONGO_DB_NAME=nie_servicehub
-APP_NAME="NIE ServiceHub API"
-DEBUG=True
-PORT=8000
-```
-
-### 3. Install Backend Dependencies
+### 1. Environment Setup
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-### 4. Verify Database Connection
-Run the database test script to verify Python → MongoDB connectivity:
+### 2. Run Automated API Tests
 ```bash
-python tests/test_db.py
+python -m unittest tests/test_requests.py
 ```
 
-### 5. Run FastAPI Application
+### 3. Run FastAPI Backend Server
 ```bash
 python -m uvicorn app.main:app --reload --port 8000
 ```
-Access API Documentation (Swagger): `http://127.0.0.1:8000/docs`
+- **Interactive Swagger Docs**: `http://127.0.0.1:8000/docs`
+- **ReDoc Documentation**: `http://127.0.0.1:8000/redoc`
 
 ---
 
-## 📡 Initial REST API Endpoints
+## 📡 REST API Specification
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/` | Application Root & Status Info |
-| `GET` | `/api/health` | Service & Database Health Check |
+| Method | Endpoint | Description | Status Code |
+|---|---|---|---|
+| `GET` | `/api/health` | Health check & MongoDB connection status | 200 OK |
+| `POST` | `/api/requests` | Raise a new service request | 201 Created |
+| `GET` | `/api/requests` | List service requests (supports `status`, `category`, `priority`, `search`) | 200 OK |
+| `GET` | `/api/requests/{request_id}` | Retrieve details for a single request | 200 OK / 404 |
+| `PUT` | `/api/requests/{request_id}` | Update title, description, category, priority | 200 OK / 404 |
+| `PATCH` | `/api/requests/{request_id}/status` | Update lifecycle status (NEW → ASSIGNED → IN_PROGRESS → RESOLVED → CLOSED) | 200 OK / 400 |
+| `PATCH` | `/api/requests/{request_id}/assign` | Assign staff member & department (auto-updates status to ASSIGNED if NEW) | 200 OK / 404 |
+| `DELETE` | `/api/requests/{request_id}` | Delete service request | 204 No Content |
 
 ---
 
 ## 📊 Learning Roadmap Status
 
 - [x] **Day 1 — Foundation**: Git, GitHub, Python, MongoDB, Environment Setup, API Foundation
-- [ ] **Day 2-3 — FastAPI Backend**: Request Lifecycle, Schemas, Full REST Endpoints, Auth
+- [x] **Day 2-3 — FastAPI Backend**: Request Lifecycle, Pydantic Validation, Full REST Endpoints, Postman Collection, Automated Tests
 - [ ] **Day 4-5 — React Frontend**: Dashboard, Request Forms, Routing, Bootstrap UI
 - [ ] **Dockerization**: Dockerfiles, Docker Compose Orchestration
 - [ ] **Day 6 — GenAI Integration**: AI-Assisted Ticket Classification & Recommendation
